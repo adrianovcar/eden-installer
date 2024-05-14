@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Installer\Console\Concerns;
+namespace Laravel\Eden\Installer\Console\Concerns;
 
 use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\MultiSelectPrompt;

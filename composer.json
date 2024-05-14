@@ -26,12 +26,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Laravel\\Installer\\Console\\": "src/"
+            "Laravel\\Eden\\Installer\\Console\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Laravel\\Installer\\Console\\Tests\\": "tests/"
+            "Laravel\\Eden\\Installer\\Console\\Tests\\": "tests/"
         }
     },
     "config": {

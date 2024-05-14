@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Installer\Console;
+namespace Laravel\Eden\Installer\Console;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Composer;
@@ -26,7 +26,7 @@ class NewCommand extends Command
     /**
      * The Composer instance.
      *
-     * @var \Illuminate\Support\Composer
+     * @var Composer
      */
     protected $composer;
 
@@ -49,13 +49,13 @@ class NewCommand extends Command
             ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The database driver your application will use')
             ->addOption('stack', null, InputOption::VALUE_OPTIONAL, 'The Breeze / Jetstream stack that should be installed')
             ->addOption('breeze', null, InputOption::VALUE_NONE, 'Installs the Laravel Breeze scaffolding')
-            ->addOption('jet', null, InputOption::VALUE_NONE, 'Installs the Laravel Jetstream scaffolding')
-            ->addOption('dark', null, InputOption::VALUE_NONE, 'Indicate whether Breeze or Jetstream should be scaffolded with dark mode support')
+            ->addOption('eden', null, InputOption::VALUE_NONE, 'Installs the Laravel Eden scaffolding')
+            ->addOption('dark', null, InputOption::VALUE_NONE, 'Indicate whether Breeze or Eden should be scaffolded with dark mode support')
             ->addOption('typescript', null, InputOption::VALUE_NONE, 'Indicate whether Breeze should be scaffolded with TypeScript support')
-            ->addOption('ssr', null, InputOption::VALUE_NONE, 'Indicate whether Breeze or Jetstream should be scaffolded with Inertia SSR support')
-            ->addOption('api', null, InputOption::VALUE_NONE, 'Indicates whether Jetstream should be scaffolded with API support')
-            ->addOption('teams', null, InputOption::VALUE_NONE, 'Indicates whether Jetstream should be scaffolded with team support')
-            ->addOption('verification', null, InputOption::VALUE_NONE, 'Indicates whether Jetstream should be scaffolded with email verification support')
+            ->addOption('ssr', null, InputOption::VALUE_NONE, 'Indicate whether Breeze or Eden should be scaffolded with Inertia SSR support')
+            ->addOption('api', null, InputOption::VALUE_NONE, 'Indicates whether Eden should be scaffolded with API support')
+            ->addOption('teams', null, InputOption::VALUE_NONE, 'Indicates whether Eden should be scaffolded with team support')
+            ->addOption('verification', null, InputOption::VALUE_NONE, 'Indicates whether Eden should be scaffolded with email verification support')
             ->addOption('pest', null, InputOption::VALUE_NONE, 'Installs the Pest testing framework')
             ->addOption('phpunit', null, InputOption::VALUE_NONE, 'Installs the PHPUnit testing framework')
             ->addOption('prompt-breeze', null, InputOption::VALUE_NONE, 'Issues a prompt to determine if Breeze should be installed (Deprecated)')
@@ -76,12 +76,16 @@ class NewCommand extends Command
 
         $this->configurePrompts($input, $output);
 
-        $output->write(PHP_EOL.'  <fg=red> _                               _
-  | |                             | |
-  | |     __ _ _ __ __ ___   _____| |
-  | |    / _` | \'__/ _` \ \ / / _ \ |
-  | |___| (_| | | | (_| |\ V /  __/ |
-  |______\__,_|_|  \__,_| \_/ \___|_|</>'.PHP_EOL.PHP_EOL);
+        $output->write(PHP_EOL.'<fg=green>
+    █████                                      ██████████     █████
+    ░░███                                      ░░███░░░░░█    ░░███
+     ░███         ██████  ████████  ██████      ░███  █ ░   ███████   ██████  ████████
+     ░███        ░░░░░███░░███░░███░░░░░███     ░██████    ███░░███  ███░░███░░███░░███
+     ░███         ███████ ░███ ░░░  ███████     ░███░░█   ░███ ░███ ░███████  ░███ ░███
+     ░███      █ ███░░███ ░███     ███░░███     ░███ ░   █░███ ░███ ░███░░░   ░███ ░███
+     ███████████░░█████████████   ░░████████    ██████████░░████████░░██████  ████ █████
+    ░░░░░░░░░░░  ░░░░░░░░░░░░░     ░░░░░░░░    ░░░░░░░░░░  ░░░░░░░░  ░░░░░░  ░░░░ ░░░░░
+</>'.PHP_EOL.PHP_EOL);
 
         if (! $input->getArgument('name')) {
             $input->setArgument('name', text(
@@ -94,7 +98,7 @@ class NewCommand extends Command
             ));
         }
 
-        if (! $input->getOption('breeze') && ! $input->getOption('jet')) {
+        if (! $input->getOption('breeze') && ! $input->getOption('eden')) {
             match (select(
                 label: 'Would you like to install a starter kit?',
                 options: [
@@ -102,18 +106,19 @@ class NewCommand extends Command
                     'breeze' => 'Laravel Breeze',
                     'jetstream' => 'Laravel Jetstream',
                 ],
-                default: 'none',
+                default: 'eden',
+                scroll: 8,
             )) {
                 'breeze' => $input->setOption('breeze', true),
-                'jetstream' => $input->setOption('jet', true),
+                'eden' => $input->setOption('eden', true),
                 default => null,
             };
         }
 
         if ($input->getOption('breeze')) {
             $this->promptForBreezeOptions($input);
-        } elseif ($input->getOption('jet')) {
-            $this->promptForJetstreamOptions($input);
+        } elseif ($input->getOption('eden')) {
+            $this->promptForEdenstreamOptions($input);
         }
 
         if (! $input->getOption('phpunit') && ! $input->getOption('pest')) {
@@ -200,7 +205,7 @@ class NewCommand extends Command
 
             if ($input->getOption('breeze')) {
                 $this->installBreeze($directory, $input, $output);
-            } elseif ($input->getOption('jet')) {
+            } elseif ($input->getOption('eden')) {
                 $this->installJetstream($directory, $input, $output);
             } elseif ($input->getOption('pest')) {
                 $this->installPest($directory, $input, $output);
@@ -441,7 +446,7 @@ class NewCommand extends Command
 
         $this->runCommands($commands, $input, $output, workingPath: $directory);
 
-        $this->commitChanges('Install Jetstream', $directory, $input, $output);
+        $this->commitChanges('Install Eden', $directory, $input, $output);
     }
 
     /**
@@ -539,16 +544,16 @@ class NewCommand extends Command
     }
 
     /**
-     * Determine the stack for Jetstream.
+     * Determine the stack for Eden.
      *
      * @param  \Symfony\Component\Console\Input\InputInterface  $input
      * @return void
      */
-    protected function promptForJetstreamOptions(InputInterface $input)
+    protected function promptForEdenstreamOptions(InputInterface $input)
     {
         if (! $input->getOption('stack')) {
             $input->setOption('stack', select(
-                label: 'Which Jetstream stack would you like to install?',
+                label: 'Which Eden stack would you like to install?',
                 options: [
                     'livewire' => 'Livewire',
                     'inertia' => 'Vue with Inertia',
@@ -564,6 +569,10 @@ class NewCommand extends Command
                 'dark' => 'Dark mode',
                 'verification' => 'Email verification',
                 'teams' => 'Team support',
+                'permissions' => 'Users permissions (soon)',
+                'logs' => 'System log (soon)',
+                'products' => 'Products CRUD (soon)',
+                'saas' => 'SaaS Package (plans, checkout & overview) (soon)',
             ])->when(
                 $input->getOption('stack') === 'inertia',
                 fn ($options) => $options->put('ssr', 'Inertia SSR')
@@ -575,6 +584,7 @@ class NewCommand extends Command
                 $input->getOption('verification') ? 'verification' : null,
                 $input->getOption('stack') === 'inertia' && $input->getOption('ssr') ? 'ssr' : null,
             ]),
+            scroll: 9,
         ))->each(fn ($option) => $input->setOption($option, true));
     }
 
@@ -605,9 +615,9 @@ class NewCommand extends Command
             return;
         }
 
-        if ($input->getOption('jet')) {
+        if ($input->getOption('eden')) {
             if (! in_array($input->getOption('stack'), $stacks = ['inertia', 'livewire'])) {
-                throw new \InvalidArgumentException("Invalid Jetstream stack [{$input->getOption('stack')}]. Valid options are: ".implode(', ', $stacks).'.');
+                throw new \InvalidArgumentException("Invalid Eden stack [{$input->getOption('stack')}]. Valid options are: ".implode(', ', $stacks).'.');
             }
 
             return;
